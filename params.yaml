@@ -1,5 +1,5 @@
 # params.yaml
-index_col: 'customer_id'
+index_col: 'id'
 target_col: 'target'
 one_hot_drop: 'if_binary'
 auto_class_weights: 'Balanced'
