@@ -150,6 +150,10 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
+.env
+.env_template
+
+
 # Cython debug symbols
 cython_debug/
 
