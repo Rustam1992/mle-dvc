@@ -3,9 +3,9 @@
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from category_encoders import CatBoostEncoder
+from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from catboost import CatBoostClassifier
+
 import yaml
 import os
 import joblib
@@ -33,18 +33,6 @@ def fit_model():
         include=["object", "category"]
     ).columns.tolist()
 
-    # бинарные категориальные признаки
-    binary_features = [
-        col for col in categorical_features
-        if X[col].nunique() == 2
-    ]
-
-    # остальные категориальные признаки
-    other_categorical_features = [
-        col for col in categorical_features
-        if col not in binary_features
-    ]
-
     # числовые признаки
     numerical_features = X.select_dtypes(
         include=["int64", "float64"]
@@ -54,17 +42,12 @@ def fit_model():
     preprocessor = ColumnTransformer(
         transformers=[
             (
-                "binary",
+                "categorical",
                 OneHotEncoder(
                     drop=params["one_hot_drop"],
                     handle_unknown="ignore"
                 ),
-                binary_features
-            ),
-            (
-                "categorical",
-                CatBoostEncoder(),
-                other_categorical_features
+                categorical_features
             ),
             (
                 "numerical",
@@ -75,9 +58,9 @@ def fit_model():
     )
 
     # модель
-    model = CatBoostClassifier(
-        auto_class_weights=params["auto_class_weights"],
-        verbose=False
+    model = LogisticRegression(
+        C=params["C"],
+        penalty=params["penalty"]
     )
 
     # pipeline
